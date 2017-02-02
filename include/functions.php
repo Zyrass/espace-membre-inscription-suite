@@ -26,7 +26,7 @@ function accountInformations() :array {
 // Le second paramètre correspond au variable que pourrait contenir notre requete. Si il n'y en a pas,
 // on initialise par défaut un tableau vide qui correspondra à la méthode query.
 // On retournera un entier qui permettra d'indiqué le nombre de suppression.'
-function bddDelete(string $query, array $params) :int {
+function bddDelete(string $query, array $params =[]) :int {
     // Pour se connecter à la bdd, on va utiliser un require.
     require 'pdo.php';
 
@@ -52,7 +52,7 @@ function bddDelete(string $query, array $params) :int {
 // Le second paramètre correspond au variable que pourrait contenir notre requete. Si il n'y en a pas,
 // on initialise par défaut un tableau vide qui correspondra à la méthode query.
 // On retournera un entier qui permettra d'indiqué le nombre d'ajout qu'il y aura eu.
-function bddInsert(string $query, array $params) :int {
+function bddInsert(string $query, array $params = []) :int {
     // Pour se connecter à la bdd, on va utiliser un require.
     require 'pdo.php';
 
@@ -102,7 +102,7 @@ function bddSelect(string $query, array $params = []) {
 // Le second paramètre correspond au variable que pourrait contenir notre requete. Si il n'y en a pas,
 // on initialise par défaut un tableau vide qui correspondra à la méthode query.
 // On retournera un entier qui permettra d'indiqué le nombre de modification qu'il y aura eu.
-function bddUpdate(string $query, array $params) :int {
+function bddUpdate(string $query, array $params = []) :int {
     // Pour se connecter à la bdd, on va utiliser un require.
     require 'pdo.php';
 
@@ -127,7 +127,18 @@ function bddUpdate(string $query, array $params) :int {
 // true     -> Permet de dire que l'adresse mail est disponible.
 // false    -> Permet de dire que l'adresse mail n'est pas disponible.
 function mailFree() : bool  {
-    return true;
+        // On créer une variable membre qui contiendra la fonction bddUpdate()
+    // on sélectionnera l'id de la table membre selon le mail qu'on aura marqué.
+    // En second argument on récupèrera ce que l'utilisateur aura saisi comme mail.
+    $membre = bddSelect('SELECT id FROM membre WHERE mail = ?', [$_POST['email']]);
+
+    // On ajoute une condition qui dit que si il existe une adresse email, on retournera false.
+    // Sinon true.
+    if ($membre) {
+        return false;
+    } else {
+        return true;
+    }
 };
 
 // Fonction permettant l'envoi d'un mail au format html
@@ -167,7 +178,7 @@ function passwordOk() :bool {
  // - $_POST['email'] corresponddra à notre formulaire dans l'espace membre
  // - $password correspondra au formulaire d'oubli et donc la génération du mot de passe.'
 function passwordSave(string $password = "") {
-    $newpassword = $_POST['email'] ?? $password;
+    $newpassword = $_POST['newpassword'] ?? $password;
 
     // Conception d'une condition qui traitera la transmission des données dans la bdd selon ce qu'on aura décidé.
     if (isset($_POST['email'])) {
